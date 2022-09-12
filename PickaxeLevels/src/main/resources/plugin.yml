@@ -1,0 +1,6 @@
+name: PickaxeLevels
+main: com.daviddevelops.pickaxelevels.PickaxeLevels
+version: 0.1
+author: David
+description: Description
+api-version: 1.19
