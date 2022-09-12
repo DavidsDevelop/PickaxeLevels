@@ -1,0 +1,4 @@
+# Starting cost of pickaxe
+PickaxeXPCost: 50
+# PickaxeXPCost * PickaxeLevel * PickaxeMultiplier
+PickaxeXPMultiplier: 3

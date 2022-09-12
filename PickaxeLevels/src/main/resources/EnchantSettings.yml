@@ -1,0 +1,8 @@
+# Enchantment settings
+Explosive:
+  baseChance: 0
+  chancePerLevel: 0.01
+  sizeUpgrades: 50
+  maxLevel: 5000
+  baseCost: 500
+  costMultiplier: 1.35
