@@ -2,5 +2,6 @@ name: PickaxeLevels
 main: com.daviddevelops.pickaxelevels.PickaxeLevels
 version: 0.1
 author: David
+depend: [Vault, WorldGuard]
 description: Description
 api-version: 1.19

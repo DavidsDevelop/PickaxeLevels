@@ -2,8 +2,11 @@ package com.daviddevelops.pickaxelevels.PlayerManager;
 
 import com.daviddevelops.pickaxelevels.ConfigManager.ConfigManager;
 import com.daviddevelops.pickaxelevels.Enchants.EnchantManager;
+import com.daviddevelops.pickaxelevels.PickaxeLevels;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -17,10 +20,10 @@ public class PlayerManager {
         this.plugin = plugin;
     }
 
-    public static ArrayList<PlayerData> players = new ArrayList<>();
+    public ArrayList<PlayerData> players = new ArrayList<>();
 
 
-    public static PlayerData getPlayer(Player player){
+    public PlayerData getPlayer(Player player){
         for (PlayerData data : players) {
             if(data.getPlayer() == player){
                 return data;
@@ -30,8 +33,8 @@ public class PlayerManager {
         return null;
     }
 
-    public static void addPlayer(Player player){
-        ConfigurationSection CS = ConfigManager.getInstance().getConfig("Players.yml").getConfigurationSection(player.getUniqueId().toString());
+    public void addPlayer(Player player){
+        ConfigurationSection CS = ConfigManager.getInstance().getConfig("Players.yml").getConfigurationSection(player.getName());
         if(CS == null){
             PlayerData data = new PlayerData();
             data.setPlayer(player);
@@ -39,6 +42,7 @@ public class PlayerManager {
             data.setMiningLevel(0);
             data.setMiningXP(0);
             savePlayer(data);
+            players.add(data);
             return;
         }
         PlayerData data = new PlayerData();
@@ -46,13 +50,14 @@ public class PlayerManager {
         data.setMiningXP(CS.getInt("MiningXP"));
         data.setAmethysts(CS.getInt("Amethysts"));
         data.setMiningLevel(CS.getInt("MiningLevel"));
+        players.add(data);
     }
 
-    public static void removePlayer(PlayerData data){
+    public void removePlayer(PlayerData data){
         savePlayer(data);
         players.remove(data);
     }
-    public static void removePlayer(Player player){
+    public void removePlayer(Player player){
         PlayerData data = getPlayer(player);
         if(data ==null){
             return;
@@ -61,11 +66,21 @@ public class PlayerManager {
         players.remove(data);
     }
 
-    private static void savePlayer(PlayerData data){
-        ConfigurationSection CS = ConfigManager.getInstance().getConfig("Players.yml").getConfigurationSection(data.getPlayer().getUniqueId().toString());
-        CS.set("Amethysts", data.getAmethysts());
-        CS.set("MiningLevel", data.getMiningLevel());
-        CS.set("MiningXP", data.getMiningXP());
+    private void savePlayer(PlayerData data){
+        FileConfiguration FC = ConfigManager.getInstance().getConfig("Players.yml");
+        ConfigManager.getInstance().setData(FC, data.getPlayer().getName() + ".Amethysts", data.getAmethysts());
+        ConfigManager.getInstance().setData(FC, data.getPlayer().getName() + ".MiningXP", data.getMiningXP());
+        ConfigManager.getInstance().setData(FC, data.getPlayer().getName() + ".MiningLevel", data.getMiningLevel());
+    }
+
+    public void loadPlayers(){
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            addPlayer(p);
+        }
+    }
+
+    public PlayerManager(){
+        loadPlayers();
     }
 
     public static PlayerManager getInstance() {

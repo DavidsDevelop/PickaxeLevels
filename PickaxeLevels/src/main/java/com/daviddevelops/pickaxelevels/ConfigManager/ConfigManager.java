@@ -1,5 +1,6 @@
 package com.daviddevelops.pickaxelevels.ConfigManager;
 
+import com.daviddevelops.pickaxelevels.PickaxeLevels;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -7,7 +8,6 @@ import org.bukkit.WorldCreator;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -39,9 +39,41 @@ public class ConfigManager {
         return createNewCustomConfig(name);
     }
 
+    public FileConfiguration getConfig(String name, PickaxeLevels plugin){
+        if (customConfigs.size() > 0) {
+            for (FileConfiguration conf : customConfigs) {
+                if (conf.getName().equalsIgnoreCase(name)) {
+                    return conf;
+                }
+            }
+        }
+
+        return createNewCustomConfig(name, plugin);
+    }
+
     public void reloadConfigs(){
         customConfigs.clear();
         configNames.clear();
+    }
+
+    private FileConfiguration createNewCustomConfig(String name, PickaxeLevels plugin) {
+        FileConfiguration fileConfiguration;
+        File configFile = new File(plugin.getDataFolder(), name);
+        if (!configFile.exists()) {
+            configFile.getParentFile().mkdirs();
+            plugin.saveResource(name, false);
+        }
+
+        fileConfiguration = new YamlConfiguration();
+        try {
+            fileConfiguration.load(configFile);
+            customConfigs.add(fileConfiguration);
+            configNames.add(name);
+            return fileConfiguration;
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private FileConfiguration createNewCustomConfig(String name) {

@@ -6,3 +6,36 @@ Explosive:
   maxLevel: 5000
   baseCost: 500
   costMultiplier: 1.35
+Crystallized:
+  baseChance: 0
+  chancePerLevel: 100
+  maxLevel: 5000
+  baseCost: 500
+  costMultiplier: 1.35
+Fortune:
+  # Math is as follows: BlockValue + (BlockValue * (FortuneLevel * (FortuneBonus + (MerchantLevel * MerchantBonus)). If the blocks value was 5. Fortune would make it 12.5 Merchant would make it 20. (Default configs of 1.5)
+  bonusPerLevel: 1.5
+  maxLevel: 5000
+  baseCost: 500
+  costMultiplier: 1.35
+Merchant:
+  bonusPerLevel: 1.5
+  maxLevel: 5000
+  baseCost: 500
+  costMultiplier: 1.35
+Jackhammer:
+  baseChance: 0
+  chancePerLevel: 100
+  maxLevel: 5000
+  baseCost: 500
+  costMultiplier: 1.35
+Meteor:
+  chancePerLevel: 100
+  maxLevel: 5000
+  baseCost: 500
+  costMultiplier: 1.35
+XPGrabber:
+  bonusPerLevel: 0.1
+  maxLevel: 5000
+  baseCost: 500
+  costMultiplier: 1.35

@@ -1,67 +1,95 @@
 package com.daviddevelops.pickaxelevels.EventManager;
 
 import com.daviddevelops.pickaxelevels.ConfigManager.ConfigManager;
-import com.daviddevelops.pickaxelevels.Enchants.CustomEnchant;
 import com.daviddevelops.pickaxelevels.Enchants.EnchantManager;
+import com.daviddevelops.pickaxelevels.GUIManager.UpgradeManager;
 import com.daviddevelops.pickaxelevels.Pickaxe;
 import com.daviddevelops.pickaxelevels.PickaxeLevels;
 import com.daviddevelops.pickaxelevels.PlayerManager.PlayerManager;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 
 public class EventManager implements Listener {
-    ArrayList<Material> PK = new ArrayList<Material>();
+    EnchantManager enchantManager;
+    Pickaxe pickaxe;
+    PlayerManager playerManager;
+    UpgradeManager upgradeManager;
     public EventManager(){
-        PK.add(Material.DIAMOND_PICKAXE);
-        PK.add(Material.IRON_PICKAXE);
-        PK.add(Material.GOLDEN_PICKAXE);
+        this.enchantManager = EnchantManager.getInstance();
+        this.pickaxe = Pickaxe.getInstance();
+        this.playerManager = PlayerManager.getInstance();
+        this.upgradeManager = new UpgradeManager();
     }
+
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event){
+        Player player =event.getPlayer();
+        if(event.getAction() == Action.RIGHT_CLICK_AIR && pickaxe.isPickaxe(player)){
+            if(pickaxe.hasValues(player.getItemInHand())){
+                upgradeManager.openInventory(player);
+            }
+        }
+    }
+
+
+    @EventHandler
+    public void onInteractInventory(InventoryClickEvent event){
+        if(event.getWhoClicked() instanceof Player){
+            Player player = (Player) event.getWhoClicked();
+            Inventory i = event.getInventory();
+            if(event.getView().getTitle().equalsIgnoreCase("Pickaxe upgrades")){
+                upgradeManager.interacted(player, event.getSlot(), event);
+            }
+        }
+    }
+
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
-        PlayerManager.addPlayer(event.getPlayer());
+        playerManager.addPlayer(event.getPlayer());
+        playerManager.getPlayer(event.getPlayer()).getPlayer().sendMessage("TEST");
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event){
-        PlayerManager.removePlayer(event.getPlayer());
+        playerManager.removePlayer(event.getPlayer());
     }
 
     @EventHandler
     public void onPickaxeBlockBreak(BlockBreakEvent event){
-        if(Pickaxe.isPickaxe(event.getPlayer())){
-            ItemStack i = event.getPlayer().getItemInHand();
-            if(!Pickaxe.hasValues(i)){
+        Player player = event.getPlayer();
+        Block block = event.getBlock();
+        if(pickaxe.isPickaxe(player)){
+            ItemStack i = player.getItemInHand();
+            if(!pickaxe.hasValues(i)){
                 //Create values
-                event.getPlayer().sendMessage("Creating values");
-                i = Pickaxe.createValues(i);
+                i = pickaxe.createValues(i);
             }
             //Add to values
-            i = Pickaxe.addValues(i, event.getBlock());
-            addBalance(event.getPlayer(), event.getBlock());
+            i = pickaxe.addValues(i, block);
+            playerManager.getPlayer(player).addMiningXP(ConfigManager.getInstance().getConfig("Blocks.yml").getInt(block.getBlockData().getMaterial().name() + ".XP"));
+            //addBalance(player(), block());
+            //i = enchantManager.upgradeEnchant(1, playerManager.getPlayer(player),i,"Explosive");
             //Set pickaxe
-            event.getPlayer().setItemInHand(i);
+            player.setItemInHand(i);
+            enchantManager.triggerEnchantments(enchantManager.getEnchantments(event.getEventName()), player, block);
         }
     }
 
-    public void addBalance(Player p, Block b){
-        ConfigurationSection CS = ConfigManager.getInstance().getConfig("Blocks.yml");
-        int amt = CS.getInt(b.getBlockData().getMaterial().name() + ".value");
-        PickaxeLevels.econ.depositPlayer(p, amt);
-    }
 }

@@ -2,3 +2,40 @@
 PickaxeXPCost: 50
 # PickaxeXPCost * PickaxeLevel * PickaxeMultiplier
 PickaxeXPMultiplier: 3
+# Starting cost of player
+PlayerXPCost: 25
+# PickaxeXPCost * PickaxeLevel * PickaxeMultiplier
+PlayerXPMultiplier: 2
+# {Enchant_Name}
+EnchantUpgradeMessage: "&8+1 {Enchant_Name}"
+#GUI Settings
+
+CrystallizationName: "Crystallization"
+ExplosiveName: "Bomb"
+FortuneName: "Fortune"
+JackhammerName: "Jackhammer"
+MerchantName: "Merchant"
+MeteorName: "Meteor"
+XPGrabberName: "XPGrabber"
+
+CrystallizationLore:
+  - "&4Test"
+  - " "
+ExplosiveLore:
+  - "&4Test"
+  - " "
+FortuneLore:
+  - "&4Test"
+  - " "
+JackhammerLore:
+  - "&4Test"
+  - " "
+MerchantLore:
+  - "&4Test"
+  - " "
+MeteorLore:
+  - "&4Test"
+  - " "
+XPGrabberLore:
+  - "&4Test"
+  - " "
